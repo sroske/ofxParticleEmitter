@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A914CC5311DE47F60038D13C /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A914CC4C11DE47F60038D13C /* tinyxml.cpp */; };
+		A914CC5411DE47F60038D13C /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A914CC4E11DE47F60038D13C /* tinyxmlerror.cpp */; };
+		A914CC5511DE47F60038D13C /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A914CC4F11DE47F60038D13C /* tinyxmlparser.cpp */; };
+		A914CC5611DE47F60038D13C /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A914CC5111DE47F60038D13C /* ofxXmlSettings.cpp */; };
+		A914CC5C11DE4AB30038D13C /* ofxParticleEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A914CC5B11DE4AB30038D13C /* ofxParticleEmitter.cpp */; };
 		E45BE0AA0E8CC67C009D7055 /* GLee.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE0A90E8CC67C009D7055 /* GLee.a */; };
 		E45BE2E40E8CC69C009D7055 /* rtAudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE2E30E8CC69C009D7055 /* rtAudio.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -78,6 +83,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A914CC4A11DE47F60038D13C /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
+		A914CC4C11DE47F60038D13C /* tinyxml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
+		A914CC4D11DE47F60038D13C /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
+		A914CC4E11DE47F60038D13C /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
+		A914CC4F11DE47F60038D13C /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		A914CC5111DE47F60038D13C /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
+		A914CC5211DE47F60038D13C /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
+		A914CC5A11DE4AB30038D13C /* ofxParticleEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxParticleEmitter.h; sourceTree = "<group>"; };
+		A914CC5B11DE4AB30038D13C /* ofxParticleEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxParticleEmitter.cpp; sourceTree = "<group>"; };
 		E45BE0390E8CC647009D7055 /* FreeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FreeImage.h; path = ../../../libs/freeimage/include/FreeImage.h; sourceTree = SOURCE_ROOT; };
 		E45BE03F0E8CC650009D7055 /* fmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod.h; path = ../../../libs/fmodex/include/fmod.h; sourceTree = SOURCE_ROOT; };
 		E45BE0400E8CC650009D7055 /* fmod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = fmod.hpp; path = ../../../libs/fmodex/include/fmod.hpp; sourceTree = SOURCE_ROOT; };
@@ -154,6 +168,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A914CC4711DE47DB0038D13C /* addons */ = {
+			isa = PBXGroup;
+			children = (
+				A914CC4911DE47F60038D13C /* ofxXmlSettings */,
+			);
+			name = addons;
+			sourceTree = "<group>";
+		};
+		A914CC4911DE47F60038D13C /* ofxXmlSettings */ = {
+			isa = PBXGroup;
+			children = (
+				A914CC4A11DE47F60038D13C /* install.xml */,
+				A914CC4B11DE47F60038D13C /* libs */,
+				A914CC5011DE47F60038D13C /* src */,
+			);
+			name = ofxXmlSettings;
+			path = ../../../addons/ofxXmlSettings;
+			sourceTree = SOURCE_ROOT;
+		};
+		A914CC4B11DE47F60038D13C /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				A914CC4C11DE47F60038D13C /* tinyxml.cpp */,
+				A914CC4D11DE47F60038D13C /* tinyxml.h */,
+				A914CC4E11DE47F60038D13C /* tinyxmlerror.cpp */,
+				A914CC4F11DE47F60038D13C /* tinyxmlparser.cpp */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		A914CC5011DE47F60038D13C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A914CC5111DE47F60038D13C /* ofxXmlSettings.cpp */,
+				A914CC5211DE47F60038D13C /* ofxXmlSettings.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		E45BE0360E8CC5DE009D7055 /* libs */ = {
 			isa = PBXGroup;
 			children = (
@@ -334,6 +387,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				A914CC4711DE47DB0038D13C /* addons */,
 				E4B69B5B0A3A1756003C02F2 /* particleExampleDebug.app */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -348,6 +402,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* testApp.h */,
+				A914CC5A11DE4AB30038D13C /* ofxParticleEmitter.h */,
+				A914CC5B11DE4AB30038D13C /* ofxParticleEmitter.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -515,6 +571,11 @@
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* testApp.cpp in Sources */,
+				A914CC5311DE47F60038D13C /* tinyxml.cpp in Sources */,
+				A914CC5411DE47F60038D13C /* tinyxmlerror.cpp in Sources */,
+				A914CC5511DE47F60038D13C /* tinyxmlparser.cpp in Sources */,
+				A914CC5611DE47F60038D13C /* ofxXmlSettings.cpp in Sources */,
+				A914CC5C11DE4AB30038D13C /* ofxParticleEmitter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
