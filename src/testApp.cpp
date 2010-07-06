@@ -28,7 +28,7 @@ void testApp::update()
 //--------------------------------------------------------------
 void testApp::draw()
 {
-	m_emitter.draw( ofGetScreenWidth()*0.5f, ofGetScreenHeight()*0.5f );
+	m_emitter.draw( m_mousePos.x, m_mousePos.y );
 	
 	ofSetColor( 255, 255, 255 );
 	ofDrawBitmapString( "fps: " + ofToString( ofGetFrameRate(), 2 ), 20, 20 );
@@ -57,6 +57,8 @@ void testApp::mouseMoved(int x, int y )
 void testApp::mouseDragged(int x, int y, int button)
 {
 	// nothing
+	m_mousePos.x = x;
+	m_mousePos.y = y;
 }
 
 //--------------------------------------------------------------

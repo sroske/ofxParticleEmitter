@@ -53,6 +53,7 @@ ofxParticleEmitter::ofxParticleEmitter()
 	emitCounter = 0.0f;	
 	elapsedTime = 0.0f;
 	duration = -1;
+	lastUpdateMillis = 0;
     
 	blendFuncSource = blendFuncDestination = 0;
 
@@ -130,6 +131,8 @@ void ofxParticleEmitter::parseParticleConfig()
 		texture = new ofImage();
 		texture->loadImage( imageFilename );
 		texture->setUseTexture( true );
+		
+		textureData = texture->getTextureReference().getTextureData();
 	}
 	else if ( imageData != "" )
 	{
@@ -218,18 +221,112 @@ void ofxParticleEmitter::setupArrays()
 }
 
 // ------------------------------------------------------------------------
+// Particle Management
+// ------------------------------------------------------------------------
+
+bool ofxParticleEmitter::addParticle()
+{
+	// If we have already reached the maximum number of particles then do nothing
+	if(particleCount == maxParticles)
+		return false;
+	
+	// Take the next particle out of the particle pool we have created and initialize it
+	Particle *particle = &particles[particleCount];
+	initParticle( particle );
+	
+	// Increment the particle count
+	particleCount++;
+	
+	// Return true to show that a particle has been created
+	return true;
+}
+
+void ofxParticleEmitter::initParticle( Particle* particle )
+{
+	// Init the position of the particle.  This is based on the source position of the particle emitter
+	// plus a configured variance.  The RANDOM_MINUS_1_TO_1 macro allows the number to be both positive
+	// and negative
+	particle->position.x = sourcePosition.x + sourcePositionVariance.x * RANDOM_MINUS_1_TO_1();
+	particle->position.y = sourcePosition.y + sourcePositionVariance.y * RANDOM_MINUS_1_TO_1();
+    particle->startPos.x = sourcePosition.x;
+    particle->startPos.y = sourcePosition.y;
+	
+	// Init the direction of the particle.  The newAngle is calculated using the angle passed in and the
+	// angle variance.
+	float newAngle = (GLfloat)DEGREES_TO_RADIANS(angle + angleVariance * RANDOM_MINUS_1_TO_1());
+	
+	// Create a new Vector2f using the newAngle
+	Vector2f vector = Vector2fMake(cosf(newAngle), sinf(newAngle));
+	
+	// Calculate the vectorSpeed using the speed and speedVariance which has been passed in
+	float vectorSpeed = speed + speedVariance * RANDOM_MINUS_1_TO_1();
+	
+	// The particles direction vector is calculated by taking the vector calculated above and
+	// multiplying that by the speed
+	particle->direction = Vector2fMultiply(vector, vectorSpeed);
+	
+	// Set the default diameter of the particle from the source position
+	particle->radius = maxRadius + maxRadiusVariance * RANDOM_MINUS_1_TO_1();
+	particle->radiusDelta = (maxRadius / particleLifespan) * (1.0 / MAXIMUM_UPDATE_RATE);
+	particle->angle = DEGREES_TO_RADIANS(angle + angleVariance * RANDOM_MINUS_1_TO_1());
+	particle->degreesPerSecond = DEGREES_TO_RADIANS(rotatePerSecond + rotatePerSecondVariance * RANDOM_MINUS_1_TO_1());
+    
+    particle->radialAcceleration = radialAcceleration;
+    particle->tangentialAcceleration = tangentialAcceleration;
+	
+	// Calculate the particles life span using the life span and variance passed in
+	particle->timeToLive = MAX(0, particleLifespan + particleLifespanVariance * RANDOM_MINUS_1_TO_1());
+	
+	// Calculate the particle size using the start and finish particle sizes
+	GLfloat particleStartSize = startParticleSize + startParticleSizeVariance * RANDOM_MINUS_1_TO_1();
+	GLfloat particleFinishSize = finishParticleSize + finishParticleSizeVariance * RANDOM_MINUS_1_TO_1();
+	particle->particleSizeDelta = ((particleFinishSize - particleStartSize) / particle->timeToLive) * (1.0 / MAXIMUM_UPDATE_RATE);
+	particle->particleSize = MAX(0, particleStartSize);
+	
+	// Calculate the color the particle should have when it starts its life.  All the elements
+	// of the start color passed in along with the variance are used to calculate the star color
+	Color4f start = {0, 0, 0, 0};
+	start.red = startColor.red + startColorVariance.red * RANDOM_MINUS_1_TO_1();
+	start.green = startColor.green + startColorVariance.green * RANDOM_MINUS_1_TO_1();
+	start.blue = startColor.blue + startColorVariance.blue * RANDOM_MINUS_1_TO_1();
+	start.alpha = startColor.alpha + startColorVariance.alpha * RANDOM_MINUS_1_TO_1();
+	
+	// Calculate the color the particle should be when its life is over.  This is done the same
+	// way as the start color above
+	Color4f end = {0, 0, 0, 0};
+	end.red = finishColor.red + finishColorVariance.red * RANDOM_MINUS_1_TO_1();
+	end.green = finishColor.green + finishColorVariance.green * RANDOM_MINUS_1_TO_1();
+	end.blue = finishColor.blue + finishColorVariance.blue * RANDOM_MINUS_1_TO_1();
+	end.alpha = finishColor.alpha + finishColorVariance.alpha * RANDOM_MINUS_1_TO_1();
+	
+	// Calculate the delta which is to be applied to the particles color during each cycle of its
+	// life.  The delta calculation uses the life span of the particle to make sure that the 
+	// particles color will transition from the start to end color during its life time.  As the game
+	// loop is using a fixed delta value we can calculate the delta color once saving cycles in the 
+	// update method
+	particle->color = start;
+	particle->deltaColor.red = ((end.red - start.red) / particle->timeToLive) * (1.0 / MAXIMUM_UPDATE_RATE);
+	particle->deltaColor.green = ((end.green - start.green) / particle->timeToLive)  * (1.0 / MAXIMUM_UPDATE_RATE);
+	particle->deltaColor.blue = ((end.blue - start.blue) / particle->timeToLive)  * (1.0 / MAXIMUM_UPDATE_RATE);
+	particle->deltaColor.alpha = ((end.alpha - start.alpha) / particle->timeToLive)  * (1.0 / MAXIMUM_UPDATE_RATE);
+}
+
+void ofxParticleEmitter::stopParticleEmitter()
+{
+	active = false;
+	elapsedTime = 0;
+	emitCounter = 0;
+}
+
+// ------------------------------------------------------------------------
 // Update
 // ------------------------------------------------------------------------
 
 void ofxParticleEmitter::update()
 {
 	if ( !active ) return;
-	
-	// TODO
-	
-	// need delta
-	
-	/*
+
+	GLfloat aDelta = (ofGetElapsedTimeMillis()-lastUpdateMillis)/1000.0f;
 	
 	// If the emitter is active and the emission rate is greater than zero then emit
 	// particles
@@ -237,13 +334,13 @@ void ofxParticleEmitter::update()
 		float rate = 1.0f/emissionRate;
 		emitCounter += aDelta;
 		while(particleCount < maxParticles && emitCounter > rate) {
-			[self addParticle];
+			addParticle();
 			emitCounter -= rate;
 		}
 		
 		elapsedTime += aDelta;
 		if(duration != -1 && duration < elapsedTime)
-			[self stopParticleEmitter];
+			stopParticleEmitter();
 	}
 	
 	// Reset the particle index before updating the particles in this emitter
@@ -337,8 +434,8 @@ void ofxParticleEmitter::update()
 			particleCount--;
 		}
 	}
-	
-	*/
+
+	lastUpdateMillis = ofGetElapsedTimeMillis();
 }
 
 // ------------------------------------------------------------------------
@@ -349,13 +446,19 @@ void ofxParticleEmitter::draw(int x /* = 0 */, int y /* = 0 */)
 {
 	if ( !active ) return;
 	
-	ofSetColor( 255, 255, 255 );
-
-	ofEnableAlphaBlending();
-	texture->draw( x, y );
-	ofDisableAlphaBlending();
+	glPushMatrix();
+	glTranslatef( x, y, 0.0f );
 	
-	/*
+	//drawPointsOES();
+	drawPoints();
+	//drawQuads();
+
+	glPopMatrix();
+
+}
+
+void ofxParticleEmitter::drawPoints()
+{
 	// Disable the texture coord array so that texture information is not copied over when rendering
 	// the point sprites.
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -369,7 +472,72 @@ void ofxParticleEmitter::draw(int x /* = 0 */, int y /* = 0 */)
 	glColorPointer(4,GL_FLOAT,sizeof(PointSprite),(GLvoid*) (sizeof(GLfloat)*3));
 	
 	// Bind to the particles texture
-	glBindTexture(GL_TEXTURE_2D, texture.name);
+	glBindTexture(GL_TEXTURE_2D, (GLuint)textureData.textureID);
+	
+	// Enable the point size array
+	
+	
+	//glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
+	
+	
+	// Configure the point size pointer which will use the currently bound VBO.  PointSprite contains
+	// both the location of the point as well as its size, so the config below tells the point size
+	// pointer where in the currently bound VBO it can find the size for each point
+	
+	
+	//glPointSizePointerOES(GL_FLOAT,sizeof(PointSprite),(GLvoid*) (sizeof(GL_FLOAT)*2));
+	
+	
+	// Change the blend function used if blendAdditive has been set
+	
+    // Set the blend function based on the configuration
+    glBlendFunc(blendFuncSource, blendFuncDestination);
+	
+	// Enable and configure point sprites which we are going to use for our particles
+	glEnable(GL_POINT_SPRITE);
+	glTexEnvi( GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE );
+	
+	// Now that all of the VBOs have been used to configure the vertices, pointer size and color
+	// use glDrawArrays to draw the points
+	glDrawArrays(GL_POINTS, 0, particleIndex);
+	
+	// Unbind the current VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	// Disable the client states which have been used incase the next draw function does 
+	// not need or use them
+	
+	
+	//glDisableClientState(GL_POINT_SIZE_ARRAY_OES);
+	
+	
+	glDisable(GL_POINT_SPRITE);
+	
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	// Re-enable the texture coordinates as we use them elsewhere in the game and it is expected that
+	// its on
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+void ofxParticleEmitter::drawPointsOES()
+{
+#ifdef TARGET_OF_IPHONE
+	
+	// Disable the texture coord array so that texture information is not copied over when rendering
+	// the point sprites.
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+	// Bind to the verticesID VBO and popuate it with the necessary vertex & color informaiton
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(PointSprite) * maxParticles, vertices, GL_DYNAMIC_DRAW);
+	
+	// Configure the vertex pointer which will use the currently bound VBO for its data
+	glVertexPointer(2, GL_FLOAT, sizeof(PointSprite), 0);
+	glColorPointer(4,GL_FLOAT,sizeof(PointSprite),(GLvoid*) (sizeof(GLfloat)*3));
+	
+	// Bind to the particles texture
+	glBindTexture(GL_TEXTURE_2D, (GLuint)textureData.textureID);
 	
 	// Enable the point size array
 	glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
@@ -405,9 +573,38 @@ void ofxParticleEmitter::draw(int x /* = 0 */, int y /* = 0 */)
 	// Re-enable the texture coordinates as we use them elsewhere in the game and it is expected that
 	// its on
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	 
-	 */
+	
+#endif
 }
 
+void ofxParticleEmitter::drawQuads()
+{
+	glBlendFunc(blendFuncSource, blendFuncDestination);
+	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, (GLuint)textureData.textureID );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	glBegin(GL_QUADS);
+	for( int i = particleIndex; i < maxParticles; i++ )
+	{
+		PointSprite* ps = &vertices[i];
+		
+		glColor4f( ps->color.red, ps->color.green, ps->color.blue, ps->color.alpha );
+		
+		glTexCoord2f( 0, 0 );
+		glVertex2f( ps->x - ps->size*0.5f, ps->y - ps->size*0.5f );
+		glTexCoord2f( 0, 1 );
+		glVertex2f( ps->x - ps->size*0.5f, ps->y + ps->size*0.5f );
+		glTexCoord2f( 1, 1 );
+		glVertex2f( ps->x + ps->size*0.5f, ps->y + ps->size*0.5f );
+		glTexCoord2f( 1, 0 );
+		glVertex2f( ps->x + ps->size*0.5f, ps->y - ps->size*0.5f );
+	}
+	glEnd();
+	
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
 
 
