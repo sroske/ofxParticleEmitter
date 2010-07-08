@@ -221,6 +221,15 @@ void ofxParticleEmitter::setupArrays()
 }
 
 // ------------------------------------------------------------------------
+// Public Accessors
+// ------------------------------------------------------------------------
+void ofxParticleEmitter::setSourcePosition( int x, int y)
+{
+	sourcePosition.x = x;
+	sourcePosition.y = y;
+}
+
+// ------------------------------------------------------------------------
 // Particle Management
 // ------------------------------------------------------------------------
 
@@ -449,12 +458,34 @@ void ofxParticleEmitter::draw(int x /* = 0 */, int y /* = 0 */)
 	glPushMatrix();
 	glTranslatef( x, y, 0.0f );
 	
-	//drawPointsOES();
-	//drawPoints();
+#ifdef TARGET_OF_IPHONE
+	
+	drawPointsOES();
+	
+#else
+	
 	drawTextures();
-
+	//drawPoints();
+	
+#endif
+	
 	glPopMatrix();
+}
 
+void ofxParticleEmitter::drawTextures()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(blendFuncSource, blendFuncDestination);
+	
+	for( int i = 0; i < particleCount; i++ )
+	{
+		PointSprite* ps = &vertices[i];
+		ofSetColor( ps->color.red*255.0f, ps->color.green*255.0f, 
+				   ps->color.blue*255.0f, ps->color.alpha*255.0f );
+		texture->draw( ps->x, ps->y, ps->size, ps->size );
+	}
+	
+	glDisable(GL_BLEND);
 }
 
 void ofxParticleEmitter::drawPoints()
@@ -575,24 +606,6 @@ void ofxParticleEmitter::drawPointsOES()
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 #endif
-}
-
-void ofxParticleEmitter::drawTextures()
-{
-	glEnable(GL_BLEND);
-	glBlendFunc(blendFuncSource, blendFuncDestination);
-	
-	for( int i = 0; i < particleCount; i++ )
-	{
-		PointSprite* ps = &vertices[i];
-		ofSetColor( ps->color.red*255.0f, ps->color.green*255.0f, 
-				   ps->color.blue*255.0f, ps->color.alpha*255.0f );
-		texture->draw( ps->x, ps->y, ps->size, ps->size );
-	}
-	
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_BLEND);
-	
 }
 
 

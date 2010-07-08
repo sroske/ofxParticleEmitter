@@ -6,6 +6,7 @@ void testApp::setup()
 {
 	ofSetWindowTitle( "particle example" );
 	ofBackground( 0, 0, 0 );
+	ofSetFrameRate( 60 );
 	
 	if ( !m_emitter.loadFromXml( "circles.pex" ) )
 	{
@@ -28,7 +29,7 @@ void testApp::update()
 //--------------------------------------------------------------
 void testApp::draw()
 {
-	m_emitter.draw( m_mousePos.x, m_mousePos.y );
+	m_emitter.draw( 0, 0 );
 	
 	ofSetColor( 255, 255, 255 );
 	ofDrawBitmapString( "fps: " + ofToString( ofGetFrameRate(), 2 ), 20, 20 );
@@ -56,9 +57,7 @@ void testApp::mouseMoved(int x, int y )
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button)
 {
-	// nothing
-	m_mousePos.x = x;
-	m_mousePos.y = y;
+	m_emitter.setSourcePosition( x, y );
 }
 
 //--------------------------------------------------------------

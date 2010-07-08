@@ -162,6 +162,8 @@ public:
 	void	draw( int x = 0, int y = 0 );
 	void	exit();
 	
+	void	setSourcePosition( int x, int y);
+	
 protected:
 	
 	void	parseParticleConfig();

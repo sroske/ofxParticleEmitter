@@ -26,7 +26,6 @@ public:
 protected:
 	
 	ofxParticleEmitter		m_emitter;
-	Vector2f				m_mousePos;
 	
 };
 
