@@ -450,8 +450,8 @@ void ofxParticleEmitter::draw(int x /* = 0 */, int y /* = 0 */)
 	glTranslatef( x, y, 0.0f );
 	
 	//drawPointsOES();
-	drawPoints();
-	//drawQuads();
+	//drawPoints();
+	drawTextures();
 
 	glPopMatrix();
 
@@ -577,34 +577,22 @@ void ofxParticleEmitter::drawPointsOES()
 #endif
 }
 
-void ofxParticleEmitter::drawQuads()
+void ofxParticleEmitter::drawTextures()
 {
+	glEnable(GL_BLEND);
 	glBlendFunc(blendFuncSource, blendFuncDestination);
 	
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, (GLuint)textureData.textureID );
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	glBegin(GL_QUADS);
-	for( int i = particleIndex; i < maxParticles; i++ )
+	for( int i = 0; i < particleCount; i++ )
 	{
 		PointSprite* ps = &vertices[i];
-		
-		glColor4f( ps->color.red, ps->color.green, ps->color.blue, ps->color.alpha );
-		
-		glTexCoord2f( 0, 0 );
-		glVertex2f( ps->x - ps->size*0.5f, ps->y - ps->size*0.5f );
-		glTexCoord2f( 0, 1 );
-		glVertex2f( ps->x - ps->size*0.5f, ps->y + ps->size*0.5f );
-		glTexCoord2f( 1, 1 );
-		glVertex2f( ps->x + ps->size*0.5f, ps->y + ps->size*0.5f );
-		glTexCoord2f( 1, 0 );
-		glVertex2f( ps->x + ps->size*0.5f, ps->y - ps->size*0.5f );
+		ofSetColor( ps->color.red*255.0f, ps->color.green*255.0f, 
+				   ps->color.blue*255.0f, ps->color.alpha*255.0f );
+		texture->draw( ps->x, ps->y, ps->size, ps->size );
 	}
-	glEnd();
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
+	
 }
 
 

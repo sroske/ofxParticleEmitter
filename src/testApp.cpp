@@ -5,7 +5,7 @@
 void testApp::setup()
 {
 	ofSetWindowTitle( "particle example" );
-	ofBackground( 120, 120, 120 );
+	ofBackground( 0, 0, 0 );
 	
 	if ( !m_emitter.loadFromXml( "circles.pex" ) )
 	{

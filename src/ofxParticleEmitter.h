@@ -171,7 +171,7 @@ protected:
 	bool	addParticle();
 	void	initParticle( Particle* particle );
 	
-	void	drawQuads();
+	void	drawTextures();
 	void	drawPoints();
 	void	drawPointsOES();
 	
