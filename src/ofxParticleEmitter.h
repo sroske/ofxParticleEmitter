@@ -85,13 +85,13 @@ typedef struct
 // ------------------------------------------------------------------------
 
 // Macro which returns a random value between -1 and 1
-#define RANDOM_MINUS_1_TO_1() ((random() / (GLfloat)0x3fffffff )-1.0f)
+#define RANDOM_MINUS_1_TO_1() (ofRandom( -1.0f, 1.0f ))
 
 // Macro which returns a random number between 0 and 1
-#define RANDOM_0_TO_1() ((random() / (GLfloat)0x7fffffff ))
+#define RANDOM_0_TO_1() (ofRandom( 0.0f, 1.0f ))
 
 // Macro which converts degrees into radians
-#define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * M_PI)
+#define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * PI)
 
 // ------------------------------------------------------------------------
 // Inline functions
@@ -105,27 +105,38 @@ static const Vector2f Vector2fZero = {0.0f, 0.0f};
 
 // Return a populated Vector2d structure from the floats passed in
 static inline Vector2f Vector2fMake(GLfloat x, GLfloat y) {
-	return (Vector2f) {x, y};
+	Vector2f r; r.x = x; r.y = y;
+	return r;
 }
 
 // Return a Color4f structure populated with the color values passed in
 static inline Color4f Color4fMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-	return (Color4f) {red, green, blue, alpha};
+	Color4f c; c.red = red; c.green = green; c.blue = blue; c.alpha = alpha;
+	return c;
 }
 
 // Return a Vector2f containing v multiplied by s
 static inline Vector2f Vector2fMultiply(Vector2f v, GLfloat s) {
-	return (Vector2f) {v.x * s, v.y * s};
+	Vector2f r; 
+	r.x = v.x * s;
+	r.y = v.y * s;
+	return r;
 }
 
 // Return a Vector2f containing v1 + v2
 static inline Vector2f Vector2fAdd(Vector2f v1, Vector2f v2) {
-	return (Vector2f) {v1.x + v2.x, v1.y + v2.y};
+	Vector2f r; 
+	r.x = v1.x + v2.x;
+	r.y = v1.y + v2.y;
+	return r;
 }
 
 // Return a Vector2f containing v1 - v2
 static inline Vector2f Vector2fSub(Vector2f v1, Vector2f v2) {
-	return (Vector2f) {v1.x - v2.x, v1.y - v2.y};
+	Vector2f r; 
+	r.x = v1.x - v2.x;
+	r.y = v1.y - v2.y;
+	return r;
 }
 
 // Return the dot product of v1 and v2

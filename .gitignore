@@ -2,3 +2,11 @@ sroske.*
 build
 .DS_Store
 particleExample*.app
+obj
+*.suo
+*.ncb
+*.user
+bin/*.dll
+bin/*.exe
+bin/*.ilk
+bin/*.pdb
