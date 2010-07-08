@@ -57,7 +57,8 @@ void testApp::mouseMoved(int x, int y )
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button)
 {
-	m_emitter.setSourcePosition( x, y );
+	m_emitter.sourcePosition.x = x;
+	m_emitter.sourcePosition.y = y;
 }
 
 //--------------------------------------------------------------

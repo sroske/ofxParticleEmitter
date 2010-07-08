@@ -131,6 +131,7 @@ void ofxParticleEmitter::parseParticleConfig()
 		texture = new ofImage();
 		texture->loadImage( imageFilename );
 		texture->setUseTexture( true );
+		texture->setAnchorPercent( 0.5f, 0.5f );
 		
 		textureData = texture->getTextureReference().getTextureData();
 	}
@@ -196,9 +197,6 @@ void ofxParticleEmitter::parseParticleConfig()
 	
 	rotatePerSecond				= settings->getAttribute( "rotatePerSecond", "value", rotatePerSecond );
 	rotatePerSecondVariance		= settings->getAttribute( "rotatePerSecondVariance", "value", rotatePerSecondVariance );
-	
-	// Calculate the emission rate
-	emissionRate = maxParticles / particleLifespan;
 }
 
 void ofxParticleEmitter::setupArrays()
@@ -218,15 +216,6 @@ void ofxParticleEmitter::setupArrays()
 	
 	// Reset the elapsed time
 	elapsedTime = 0;
-}
-
-// ------------------------------------------------------------------------
-// Public Accessors
-// ------------------------------------------------------------------------
-void ofxParticleEmitter::setSourcePosition( int x, int y)
-{
-	sourcePosition.x = x;
-	sourcePosition.y = y;
 }
 
 // ------------------------------------------------------------------------
@@ -334,6 +323,9 @@ void ofxParticleEmitter::stopParticleEmitter()
 void ofxParticleEmitter::update()
 {
 	if ( !active ) return;
+
+	// Calculate the emission rate
+	emissionRate = maxParticles / particleLifespan;
 
 	GLfloat aDelta = (ofGetElapsedTimeMillis()-lastUpdateMillis)/1000.0f;
 	
@@ -488,6 +480,9 @@ void ofxParticleEmitter::drawTextures()
 	glDisable(GL_BLEND);
 }
 
+// this doesn't yet work, it is an attempt to port over the point sprite logic
+// from opengles. It draws the point sprites but it doesn't replace the point
+// size or color values. I left it here in case anyone wants to fix it :)
 void ofxParticleEmitter::drawPoints()
 {
 	// Disable the texture coord array so that texture information is not copied over when rendering

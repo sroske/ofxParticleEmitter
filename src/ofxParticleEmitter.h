@@ -172,8 +172,32 @@ public:
 	void	update();
 	void	draw( int x = 0, int y = 0 );
 	void	exit();
-	
-	void	setSourcePosition( int x, int y);
+
+	int				emitterType;
+	Vector2f		sourcePosition, sourcePositionVariance;			
+	GLfloat			angle, angleVariance;								
+	GLfloat			speed, speedVariance;	
+	GLfloat			radialAcceleration, tangentialAcceleration;
+	GLfloat			radialAccelVariance, tangentialAccelVariance;
+	Vector2f		gravity;	
+	GLfloat			particleLifespan, particleLifespanVariance;			
+	Color4f			startColor, startColorVariance;						
+	Color4f			finishColor, finishColorVariance;
+	GLfloat			startParticleSize, startParticleSizeVariance;
+	GLfloat			finishParticleSize, finishParticleSizeVariance;
+	GLint			maxParticles;
+	GLint			particleCount;
+	GLfloat			duration;
+	int				blendFuncSource, blendFuncDestination;
+
+	// Particle ivars only used when a maxRadius value is provided.  These values are used for
+	// the special purpose of creating the spinning portal emitter
+	GLfloat			maxRadius;						// Max radius at which particles are drawn when rotating
+	GLfloat			maxRadiusVariance;				// Variance of the maxRadius
+	GLfloat			radiusSpeed;					// The speed at which a particle moves from maxRadius to minRadius
+	GLfloat			minRadius;						// Radius from source below which a particle dies
+	GLfloat			rotatePerSecond;				// Number of degrees to rotate a particle around the source position per second
+	GLfloat			rotatePerSecondVariance;		// Variance in degrees for rotatePerSecond
 	
 protected:
 	
@@ -189,52 +213,21 @@ protected:
 	void	drawPointsOES();
 	
 	ofxXmlSettings*	settings;
-	
-	int				emitterType;
-	
+
 	ofImage*		texture;												
 	ofTextureData	textureData;
 	
-	Vector2f		sourcePosition, sourcePositionVariance;			
-	GLfloat			angle, angleVariance;								
-	GLfloat			speed, speedVariance;	
-    GLfloat			radialAcceleration, tangentialAcceleration;
-    GLfloat			radialAccelVariance, tangentialAccelVariance;
-	Vector2f		gravity;	
-	GLfloat			particleLifespan, particleLifespanVariance;			
-	Color4f			startColor, startColorVariance;						
-	Color4f			finishColor, finishColorVariance;
-	GLfloat			startParticleSize, startParticleSizeVariance;
-	GLfloat			finishParticleSize, finishParticleSizeVariance;
-	GLint			maxParticles;
-	GLint			particleCount;
 	GLfloat			emissionRate;
 	GLfloat			emitCounter;	
 	GLfloat			elapsedTime;
-	GLfloat			duration;
 	int				lastUpdateMillis;
-    
-	int				blendFuncSource, blendFuncDestination;
-	
-	//////////////////// Particle ivars only used when a maxRadius value is provided.  These values are used for
-	//////////////////// the special purpose of creating the spinning portal emitter
-	GLfloat			maxRadius;						// Max radius at which particles are drawn when rotating
-	GLfloat			maxRadiusVariance;				// Variance of the maxRadius
-	GLfloat			radiusSpeed;					// The speed at which a particle moves from maxRadius to minRadius
-	GLfloat			minRadius;						// Radius from source below which a particle dies
-	GLfloat			rotatePerSecond;				// Numeber of degress to rotate a particle around the source pos per second
-	GLfloat			rotatePerSecondVariance;		// Variance in degrees for rotatePerSecond
-	
-	//////////////////// Particle Emitter iVars
+
 	bool			active, useTexture;
 	GLint			particleIndex;	// Stores the number of particles that are going to be rendered
-	
-	
-	///////////////////// Render
+
 	GLuint			verticesID;		// Holds the buffer name of the VBO that stores the color and vertices info for the particles
 	Particle*		particles;		// Array of particles that hold the particle emitters particle details
 	PointSprite*	vertices;		// Array of vertices and color information for each particle to be rendered
-	
 };
 
 #endif
